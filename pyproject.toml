@@ -1,0 +1,50 @@
+[project]
+name = "object-statistick"
+version = "2.0.0"
+description = "Construction-site video monitoring with a FastAPI control plane and GPU ML worker."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "apscheduler>=3.10,<4.0",
+    "fastapi>=0.115,<1.0",
+    "matplotlib>=3.9.0",
+    "numpy==2.2.6",
+    "opencv-contrib-python==4.12.0.88",
+    "openpyxl>=3.1.0",
+    "pandas>=2.0.0",
+    "psycopg[binary]>=3.2,<4.0",
+    "pytelegrambotapi>=4.0,<5.0",
+    "pydantic>=2.8,<3.0",
+    "pyyaml>=6.0,<7.0",
+    "redis>=5.0,<6.0",
+    "rq>=2.0,<3.0",
+    "sqlalchemy>=2.0,<3.0",
+    "supervision>=0.27.0.post1",
+    "torch==2.9.1",
+    "torchvision==0.24.1",
+    "ultralytics==8.3.247",
+    "ultralytics-thop==2.0.18",
+    "uvicorn[standard]>=0.30,<1.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/object_statistick"]
+
+[tool.uv]
+package = true
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+torchvision = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

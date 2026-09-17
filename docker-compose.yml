@@ -1,0 +1,78 @@
+services:
+  backend:
+    build: .
+    image: object-statistick:2.0
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://object_statistick:object_statistick@postgres:5432/object_statistick
+      REDIS_URL: redis://redis:6379/0
+      PROJECTS_CONFIG: /app/config/projects.yaml
+      STORAGE_ROOT: /app/storage
+      TZ: Europe/Moscow
+    ports:
+      - "8000:8000"
+    volumes:
+      - object-statistick-storage:/app/storage
+      - ./config:/app/config:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: object-statistick:2.0
+    restart: unless-stopped
+    command: uv run --no-sync rq worker video-processing --url redis://redis:6379/0
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://object_statistick:object_statistick@postgres:5432/object_statistick
+      REDIS_URL: redis://redis:6379/0
+      PROJECTS_CONFIG: /app/config/projects.yaml
+      STORAGE_ROOT: /app/storage
+      TZ: Europe/Moscow
+    volumes:
+      - object-statistick-storage:/app/storage
+      - ./config:/app/config:ro
+      - ./models:/app/models:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: object_statistick
+      POSTGRES_USER: object_statistick
+      POSTGRES_PASSWORD: object_statistick
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U object_statistick -d object_statistick"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  object-statistick-storage:
+  postgres-data:
+  redis-data:
