@@ -25,6 +25,8 @@ dependencies = [
     "ultralytics==8.3.247",
     "ultralytics-thop==2.0.18",
     "uvicorn[standard]>=0.30,<1.0",
+    "jupyter>=1.1.1",
+    "kagglehub>=1.0.2",
 ]
 
 [build-system]

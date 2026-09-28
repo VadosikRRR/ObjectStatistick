@@ -60,6 +60,8 @@ class ReportService:
                 text = self._render_message(project, report_date, report_jobs)
                 chat_ids = list(session.scalars(select(SubscriberRow.chat_id).where(SubscriberRow.project_id == project.id)))
                 chart_paths = [job.artifacts.get("personnel_chart", "") for job in report_jobs if job.artifacts]
+                if project.report_attachment_path and Path(project.report_attachment_path).is_file():
+                    chart_paths.append(project.report_attachment_path)
                 self._notifier.send(project.telegram_bot_token(), chat_ids, text, [str(report_path), *chart_paths])
                 now = datetime.now(timezone.utc)
                 for job in daily_jobs:

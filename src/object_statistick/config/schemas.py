@@ -52,6 +52,7 @@ class ProjectConfig(BaseModel):
     timezone: str = "Asia/Yekaterinburg"
     camera_source_env: str = Field(pattern=r"^[A-Z][A-Z0-9_]*$")
     telegram_bot_token_env: str | None = Field(default=None, pattern=r"^[A-Z][A-Z0-9_]*$")
+    report_attachment_path: str | None = None
     shifts: list[ShiftConfig] = Field(min_length=1)
     roi: tuple[int, int, int, int]
     line: tuple[tuple[int, int], tuple[int, int]]

@@ -21,6 +21,7 @@ RUN uv sync --locked --no-install-project --no-dev
 
 COPY src ./src
 COPY config ./config
+COPY assets ./assets
 RUN uv sync --locked --no-dev
 
 CMD ["uv", "run", "--no-sync", "uvicorn", "object_statistick.backend.app:app", "--host", "0.0.0.0", "--port", "8000"]
