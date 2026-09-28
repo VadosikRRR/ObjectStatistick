@@ -1,0 +1,22 @@
+# Add a site by adding one validated project block. Credentials remain in .env.
+projects:
+  - id: test
+    name: "Тест"
+    timezone: "Europe/Moscow"
+    camera_source_env: VIDEO_SOURCE_TEST
+    telegram_bot_token_env: TELEGRAM_BOT_TOKEN_PHILHARMONIC
+    report_attachment_path: "/app/assets/test_personnel_example.png"
+    shifts:
+      - { number: 1, start: "09:00", end: "17:00" }
+    roi: [0, 304, 342, 593]
+    line: [[54, 150], [170, 136]]
+    line_in_is_entry: false
+    frame_skip: 2
+    tracking:
+      track_activation_threshold: 0.25
+      lost_track_buffer: 90
+      minimum_matching_threshold: 0.85
+      frame_rate: 10
+    model:
+      path: /app/models/PhilharmonicYOLOv8m100NewVersion.pt
+      thresholds: { Person: 0.40, Technik: 0.40, Car: 0.40 }

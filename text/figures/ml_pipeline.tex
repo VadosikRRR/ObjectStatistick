@@ -1,0 +1,40 @@
+% ML-пайплайн обработки одной видеозаписи смены.
+% Подключение в текст: \input{figures/ml_pipeline}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        font=\small,
+        node distance=18mm and 7mm,
+        stage/.style={draw, rounded corners=2pt, minimum height=14mm, text width=28mm, align=center, inner sep=3pt, fill=blue!7},
+        model/.style={stage, fill=orange!15},
+        result/.style={stage, fill=green!10},
+        config/.style={draw, dashed, rounded corners=2pt, text width=34mm, align=center, inner sep=3pt, fill=gray!8},
+        flow/.style={->, >=latex, thick},
+        control/.style={->, >=latex, dashed, gray!75, thick}
+    ]
+        \node[stage] (video) {Видеозапись смены};
+        \node[stage, right=of video] (roi) {Обрезка по ROI};
+        \node[model, right=of roi] (detect) {Детекция объектов};
+        \node[model, right=of detect] (track) {Работа трекера};
+
+        \node[stage, below=of track] (line) {Контроль пересечения линии};
+        \node[result, left=of line] (event) {Запись о пересечении};
+        \node[result, left=of event] (report) {Создание отчёта};
+
+        \node[config, above=of detect] (project) {Конфигурация объекта};
+
+        \draw[flow] (video) -- (roi);
+        \draw[flow] (roi) -- (detect);
+        \draw[flow] (detect) -- (track);
+        \draw[flow] (track) -- (line);
+        \draw[flow] (line) -- (event);
+        \draw[flow] (event) -- (report);
+
+        \draw[control] (project.south west) -- (roi.north);
+        \draw[control] (project.south) -- (detect.north);
+        \draw[control] (project.south east) -- (track.north);
+        \draw[control] (project.east) -| ([xshift=8mm]line.east) -- (line.east);
+    \end{tikzpicture}
+    \caption{ML-пайплайн обработки видеозаписи строительного объекта.}
+    \label{fig:ml-pipeline}
+\end{figure}

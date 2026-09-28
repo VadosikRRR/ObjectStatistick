@@ -1,0 +1,38 @@
+# Не копировать в образ при docker build
+.git
+.gitignore
+.venv
+venv
+env
+.env
+.envrc
+.env.*
+!.env.example
+
+# Результаты работы (записи, отчёты, логи)
+recordings/
+reports/
+*.log
+myapp.log
+
+# Модели — монтируем при запуске (не класть в образ)
+*.pt
+
+# Кэш и временные файлы
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Документация и прочее (не нужны в контейнере)
+docs/
+*.md
+!README.md
+
+# IDE и ОС
+.idea
+.vscode
+.cursor
+.DS_Store
+Thumbs.db

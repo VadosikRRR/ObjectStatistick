@@ -1,0 +1,53 @@
+% Взаимодействие backend- и ML-сервисов.
+% Подключение в текст: \input{figures/system_pipeline}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        scale=0.80, transform shape, font=\small,
+        component/.style={draw, rounded corners=2pt, minimum height=10mm, text width=27mm, align=center, inner sep=3pt, fill=white},
+        camera/.style={component, fill=gray!10, text width=20mm},
+        storage/.style={component, fill=green!10, text width=24mm},
+        backend/.style={draw=blue!65, rounded corners=3pt, thick, fill=blue!4},
+        ml/.style={draw=orange!80!black, rounded corners=3pt, thick, fill=orange!8},
+        flow/.style={->, >=latex, thick}
+    ]
+        % Backend-сервис.
+        \draw[backend] (-4.3,2.4) rectangle (0.3,-3.0);
+        \node[font=\bfseries] at (-2.0,2.0) {Backend-сервис};
+        \node[component] (recorder) at (-2.0,0.7) {Планировщик и запись видео};
+        \node[component] (reports) at (-2.0,-1.5) {API и сервис отчётов};
+
+        % ML-сервис.
+        \draw[ml] (4.5,2.4) rectangle (8.5,-3.0);
+        \node[font=\bfseries] at (6.5,2.0) {ML-сервис};
+        \node[component] (processor) at (6.5,-0.4) {Обработка видео};
+
+        % Несколько источников видеопотока.
+        \node[camera] (camera1) at (-7.0,1.8) {Камера 1};
+        \node[camera] (camera2) at (-7.0,0.7) {Камера 2};
+        \node[font=\Large] at (-7.0,-0.25) {$\vdots$};
+        \node[camera] (cameran) at (-7.0,-1.2) {Камера N};
+
+        % Очередь между сервисами, база данных и получатель отчёта.
+        \node[storage] (queue) at (2.25,0.7) {Redis / RQ};
+        \node[storage] (database) at (2.25,-1.5) {PostgreSQL};
+        \node[camera] (telegram) at (-7.0,-3.3) {Telegram};
+
+        % Сбор видео и постановка задачи на обработку.
+        \draw[flow] (camera1.east) -- (recorder.west);
+        \draw[flow] (camera2.east) -- (recorder.west);
+        \draw[flow] (cameran.east) -- (recorder.west);
+        \draw[flow] (recorder.east) -- (queue.west);
+        \draw[flow] (recorder.east) -- (database.west);
+
+        % Обработка и возврат результата.
+        \draw[flow] (queue.east) -- (processor.west);
+        \draw[flow] (processor.west) -- (database.east);
+
+        % Получение результата и отправка отчёта.
+        \draw[flow] (database.west) -- (reports.east);
+        \draw[flow] (reports.west) -- (telegram.east);
+    \end{tikzpicture}
+    \caption{Взаимодействие backend- и ML-сервисов при параллельной записи видеопотоков с камер строительного объекта.}
+    \label{fig:system-pipeline}
+\end{figure}

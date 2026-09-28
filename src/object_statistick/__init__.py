@@ -1,0 +1,1 @@
+"""ObjectStatistick application package."""
